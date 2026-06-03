@@ -1,7 +1,7 @@
 # Polymorphic Malware Behavior Simulator
 
 **FOR AUTHORIZED SECURITY TESTING ONLY**
-Use exclusively in approved lab environments with Trend Micro Standard Endpoint Protection (SEPA) or Apex One installed and enrolled in Vision One.
+Use exclusively in approved lab environments with Trend Micro Standard Endpoint Protection or Apex One installed and enrolled in Vision One.
 
 ---
 
