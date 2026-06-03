@@ -186,6 +186,56 @@ Or just run `-Cleanup` which removes the entire staging directory.
 
 ---
 
+## File Locations
+
+All artifacts are written to the Windows `%TEMP%` folder (`C:\Users\<username>\AppData\Local\Temp\`). No files are written outside of TEMP or AppData.
+
+### Polymorphic Mutation Files
+
+Each generation is written to TEMP as a new EXE and immediately executed:
+
+```
+C:\Users\<username>\AppData\Local\Temp\WinSvcHost_gen1_<random>.exe   ← spawned by original
+C:\Users\<username>\AppData\Local\Temp\WinSvcHost_gen2_<random>.exe   ← spawned by gen1
+C:\Users\<username>\AppData\Local\Temp\WinSvcHost_gen3_<random>.exe   ← spawned by gen2
+```
+
+Each file has a unique SHA-256 hash but identical behavior. The exact path is printed to the console when each generation spawns.
+
+### Ransomware Simulation Files (.polyenc)
+
+Created inside a randomly-named subfolder in TEMP:
+
+```
+C:\Users\<username>\AppData\Local\Temp\Documents_Backup_<random>\
+    Document_001.polyenc
+    Document_002.polyenc
+    ...
+    Document_075.polyenc
+    README_DECRYPT.txt
+```
+
+The exact folder path is printed to the console when the ransomware module runs, e.g.:
+
+```
+[15:04:12] Staging dir: C:\Users\Tom\AppData\Local\Temp\Documents_Backup_A3F7B2C1
+```
+
+### Other Artifacts
+
+| Artifact | Location |
+|----------|----------|
+| EICAR test file | `%TEMP%\eicar_test_<random>.com` |
+| Persistent copy (EXE) | `%APPDATA%\Microsoft\Windows\WinSvcHost32.exe` |
+| Startup folder copy | `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\WinSvcHost32.exe` |
+| Registry run key | `HKCU\Software\Microsoft\Windows\CurrentVersion\Run\WinSvcHost32` |
+| Scheduled task | Task Scheduler → `WinSvcHost32` |
+| Demo log | `%TEMP%\polymorphic_demo_log.txt` |
+
+All of the above are removed by running `-cleanup`.
+
+---
+
 ## Architecture Notes
 
 - **Polymorphic mutation**: Each run of the PS1 script generates a new child copy with a different SHA256 (mutation marker replaced). The EXE appends 16 random bytes after the PE structure (ignored by the Windows loader) to change the hash.
